@@ -289,12 +289,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5P8JPPPQ9D;
 				INFOPLIST_FILE = RockPaperScissors/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Smash Cover Cut";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tie Breaker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = TripleMonkeyStudio.RockPaperScissors;
+				PRODUCT_BUNDLE_IDENTIFIER = TripleMonkeyStudio.TieBreaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -309,12 +310,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5P8JPPPQ9D;
 				INFOPLIST_FILE = RockPaperScissors/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Smash Cover Cut";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tie Breaker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = TripleMonkeyStudio.RockPaperScissors;
+				PRODUCT_BUNDLE_IDENTIFIER = TripleMonkeyStudio.TieBreaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

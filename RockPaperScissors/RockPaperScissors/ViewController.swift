@@ -9,9 +9,9 @@ import UIKit
 import MultipeerConnectivity
 
 class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessionDelegate, MCNearbyServiceAdvertiserDelegate {
-    
+
     // MARK: Outlets and variables
-    
+
     @IBOutlet weak var navItem: UINavigationItem!
     @IBOutlet weak var gameView: UIView!
     @IBOutlet weak var instructionsLabel: UILabel!
@@ -24,7 +24,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     @IBOutlet weak var paperButton: UIButton!
     @IBOutlet weak var scissorsButton: UIButton!
     @IBOutlet weak var readyButton: UIButton!
-    
+
     // Timer for count down
     var countdown: Timer?
     // Int for countdown
@@ -34,9 +34,9 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var peerChoiceTag = 1
     // Tuple of bools for ready status
     var readyUp = (playerOne: Bool(), playerTwo: Bool())
-    
+
     // MARK: Multipeer Connection
-    
+
     // Device id as seen by other devices
     var peerID: MCPeerID!
     // Device ID of connected peer
@@ -47,15 +47,15 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
     var browser: MCBrowserViewController!
     // Advertiser to assist in presenting self to other devices
     var advertiser: MCNearbyServiceAdvertiser!
-    
+
     // Browsing channel. Only devices sharing channel will see each other
     let serviceID = "rps-NK"
-    
+
     // MARK: ViewDidLoad
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Setup MC obj values
         peerID = MCPeerID(displayName: UIDevice.current.name)
         // Use peer id for session and assign delegate
@@ -65,13 +65,13 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         advertiser = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: serviceID)
         advertiser.delegate = self
         advertiser.startAdvertisingPeer()
-        
+
         // Edit nav item text properties
         self.navigationController?.navigationBar.titleTextAttributes  = [ NSAttributedString.Key.font: UIFont(name: "Helvetica", size: 10)!]
     }
-    
+
     // MARK: IBActions
-    
+
     @IBAction func handleChoiceTap(_ sender: UIButton) {
         // Assign tag value
         DispatchQueue.main.async (execute: { [self] in
@@ -97,7 +97,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             }
         })
     }
-    
+
     @IBAction func handleReadyTap(_ sender: UIButton) {
         // Set and send bool notification that player is ready
         DispatchQueue.main.async (execute: { [self] in
@@ -106,7 +106,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             // Encode and send bool as data
             guard let boolToData = readyUp.playerOne.description.data(using: String.Encoding.utf8)
             else { print("Conversion failed"); return }
-            
+
             // Send a bool within do-catch to catch error
             do {
                 try session.send(boolToData, toPeers: session.connectedPeers, with: MCSessionSendDataMode.reliable)
@@ -118,7 +118,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             playRound()
         })
     }
-    
+
     @IBAction func handleConnectTap(_ sender: UIBarButtonItem) {
         // If not currently connected to peer
         if session.connectedPeers.count == 0
@@ -146,7 +146,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             self.present(disconnectAlert, animated: true, completion: nil)
         }
     }
-    
+
     // Show MC Browser
     func showMCBrowser() {
         // Browser will look for advertiser on same channel (serviceID)
@@ -156,9 +156,9 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         // Show browser
         self.present(browser, animated: true, completion: nil)
     }
-    
+
     // MARK: MC Browser Protocol
-    
+
     // Browser protocol
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
         // Dismiss presented VC
@@ -166,12 +166,12 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         // Update instructions based ton connection state
         self.updateInstructions()
     }
-    
+
     func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
         // Dismiss presented VC
         browserViewController.dismiss(animated: true, completion: nil)
     }
-    
+
     // Nearby service advertiser delegate call
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         // Alert user to request by presenting alert
@@ -188,14 +188,14 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
         // Present alert
         self.present(alert, animated: true, completion: nil)
     }
-    
+
     // MARK: MC delegate calls
-    
+
     // Remote peer state changed notifies when connection made or ended
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         // Reset ready status
         readyUp = (false, false)
-        
+
         // Dispatch to main for updating ui
         DispatchQueue.main.async(execute: { [self] in
             // Reset interface when connection changes
@@ -223,7 +223,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             }
         })
     }
-    
+
     // Received data from remote peer
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         // If data received is bool, update readyUp status
@@ -232,7 +232,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             DispatchQueue.main.async (execute: { [self] in
                 // Update readyUp status
                 readyUp.playerTwo = peerReady
-                
+
                 updateInstructions()
                 playRound()
             })
@@ -244,19 +244,19 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             })
         }
     }
-    
+
     // When receiving stream from peer
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}
     // When receiving resource file from peer (stared receiving)
     func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {}
     // When receiving resource file from peer (finished receiving)
     func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {}
-    
+
     // MARK: RPS Game play
-    
+
     // Function to update instructions based on player connection and ready status
     func updateInstructions() {
-        
+
         if session.connectedPeers.count == 1 {
             // Switch instructions according to readyUp tuple values
             switch readyUp {
@@ -279,7 +279,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             instructionsLabel.text = "Connect with a nearby player to begin."
         }
     }
-    
+
     // Function to play game with timer
     func playRound() {
         // Run timer when both players are ready
@@ -296,7 +296,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             updateInstructions()
         }
     }
-    
+
     // Counter for round
     @objc func roundCount() {
         // Update instructions with countdown
@@ -310,7 +310,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             countdown = nil
         }
     }
-    
+
     // fuction to update score
     @objc func handleRoundEnd() {
         // Show peer choice
@@ -337,7 +337,7 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             }
         }
     }
-    
+
     // Function to reset round
     @objc func resetRound() {
         if playCounter == 0 {
@@ -351,20 +351,20 @@ class ViewController: UIViewController, MCBrowserViewControllerDelegate, MCSessi
             updateInstructions()
         }
     }
-    
+
     // Function to update score count
     func updateCount(forLabel: UILabel) {
         guard let  newCount = Int(forLabel.text!) else { return }
         forLabel.text = String(newCount + 1)
     }
-    
+
     // Function to deselect choice buttons
     func deselectButtons() {
         rockButton.isSelected = false
         paperButton.isSelected = false
         scissorsButton.isSelected = false
     }
-    
+
     // Function to toggle choice button interactivity
     func toggleChoiceInteraction() {
         rockButton.isEnabled.toggle()
